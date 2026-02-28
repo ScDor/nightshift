@@ -1918,7 +1918,10 @@ func mustExecutablePath() string {
 }
 
 func writeGlobalConfig(cfg *config.Config) error {
-	configPath := config.GlobalConfigPath()
+	return writeGlobalConfigToPath(cfg, config.GlobalConfigPath())
+}
+
+func writeGlobalConfigToPath(cfg *config.Config, configPath string) error {
 	if err := os.MkdirAll(filepath.Dir(configPath), 0755); err != nil {
 		return fmt.Errorf("create config dir: %w", err)
 	}
@@ -1943,7 +1946,20 @@ func writeGlobalConfig(cfg *config.Config) error {
 	v.Set("budget.snapshot_retention_days", cfg.Budget.SnapshotRetentionDays)
 	v.Set("budget.week_start_day", cfg.Budget.WeekStartDay)
 
-	v.Set("providers", cfg.Providers)
+	// Providers: set fields individually to match mapstructure tag names (fixes #20)
+	v.Set("providers.claude.enabled", cfg.Providers.Claude.Enabled)
+	v.Set("providers.claude.data_path", cfg.Providers.Claude.DataPath)
+	v.Set("providers.claude.dangerously_skip_permissions", cfg.Providers.Claude.DangerouslySkipPermissions)
+	v.Set("providers.claude.dangerously_bypass_approvals_and_sandbox", cfg.Providers.Claude.DangerouslyBypassApprovalsAndSandbox)
+	v.Set("providers.codex.enabled", cfg.Providers.Codex.Enabled)
+	v.Set("providers.codex.data_path", cfg.Providers.Codex.DataPath)
+	v.Set("providers.codex.dangerously_skip_permissions", cfg.Providers.Codex.DangerouslySkipPermissions)
+	v.Set("providers.codex.dangerously_bypass_approvals_and_sandbox", cfg.Providers.Codex.DangerouslyBypassApprovalsAndSandbox)
+	v.Set("providers.copilot.enabled", cfg.Providers.Copilot.Enabled)
+	v.Set("providers.copilot.data_path", cfg.Providers.Copilot.DataPath)
+	v.Set("providers.copilot.dangerously_skip_permissions", cfg.Providers.Copilot.DangerouslySkipPermissions)
+	v.Set("providers.copilot.dangerously_bypass_approvals_and_sandbox", cfg.Providers.Copilot.DangerouslyBypassApprovalsAndSandbox)
+	v.Set("providers.preference", cfg.Providers.Preference)
 	v.Set("projects", cfg.Projects)
 	v.Set("tasks.enabled", cfg.Tasks.Enabled)
 
