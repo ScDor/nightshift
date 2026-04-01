@@ -75,16 +75,24 @@ help:
 	@echo "  check         - Run tests and lint"
 	@echo "  install       - Build and install to Go bin directory"
 	@echo "  calibrate-providers - Compare local Claude/Codex session usage for calibration"
-	@echo "  install-hooks - Install git pre-commit and commit-msg hooks"
+	@echo "  install-hooks - Install git pre-commit and commit-msg hook wrappers"
 	@echo "  help          - Show this help"
 
-# Install git hooks
+# Install git hook wrappers
 install-hooks:
 	@hooks_dir="$$(git rev-parse --git-path hooks)"; \
-	repo_root="$$(git rev-parse --show-toplevel)"; \
 	mkdir -p "$$hooks_dir"; \
-	ln -sf "$$repo_root/scripts/pre-commit.sh" "$$hooks_dir/pre-commit"; \
-	ln -sf "$$repo_root/scripts/commit-msg.sh" "$$hooks_dir/commit-msg"; \
-	echo "✓ hooks installed"; \
-	echo "  $$hooks_dir/pre-commit -> $$repo_root/scripts/pre-commit.sh"; \
-	echo "  $$hooks_dir/commit-msg -> $$repo_root/scripts/commit-msg.sh"
+	for hook in pre-commit commit-msg; do \
+		hook_path="$$hooks_dir/$$hook"; \
+		script_path="scripts/$$hook.sh"; \
+		rm -f "$$hook_path"; \
+		{ \
+			printf '%s\n' '#!/usr/bin/env bash'; \
+			printf '%s\n' 'set -euo pipefail'; \
+			printf '%s\n' 'repo_root="$$(git rev-parse --show-toplevel)"'; \
+			printf '%s\n' 'exec "$$repo_root/'"$$script_path"'" "$$@"'; \
+		} > "$$hook_path"; \
+		chmod +x "$$hook_path"; \
+		echo "✓ $$hook_path -> $$script_path"; \
+	done; \
+	echo "hooks installed with worktree-safe wrappers"
