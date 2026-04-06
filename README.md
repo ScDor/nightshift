@@ -221,10 +221,21 @@ printenv OPENAI_API_KEY | codex login --with-api-key
 
 ```bash
 gh auth login
+gh extension install github/gh-copilot
 gh copilot --help
 ```
 
-Nightshift prefers a standalone `copilot` binary when one is present in `PATH`. If not, it falls back to `gh copilot`. After authenticating a provider, run `nightshift doctor` to confirm Nightshift can see it.
+Nightshift prefers a standalone `copilot` binary when one is present in `PATH`. If not, it falls back to `gh copilot`, which Nightshift detects through `gh extension list`.
+
+To verify provider CLI access without executing a task:
+
+```bash
+nightshift task run lint-fix --provider claude --dry-run
+nightshift task run lint-fix --provider codex --dry-run
+nightshift task run lint-fix --provider copilot --dry-run
+```
+
+Then run `nightshift doctor` to inspect config, data paths, usage, and snapshots for the providers you have enabled in config.
 
 If you prefer API-based usage, you can authenticate Claude and Codex CLIs with API keys instead.
 

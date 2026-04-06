@@ -39,10 +39,11 @@ Nightshift uses the local `codex` CLI and reads usage data from `providers.codex
 
 ```bash
 gh auth login
+gh extension install github/gh-copilot
 gh copilot --help
 ```
 
-Nightshift supports either a standalone `copilot` binary or `gh copilot`. It prefers standalone `copilot` when one is present in `PATH`, otherwise it falls back to `gh`.
+Nightshift supports either a standalone `copilot` binary or `gh copilot`. It prefers standalone `copilot` when one is present in `PATH`, otherwise it falls back to `gh`, which must have the `gh-copilot` extension installed.
 
 ## GitHub Workflow
 

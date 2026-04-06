@@ -331,4 +331,4 @@ nightshift doctor
 nightshift status --today
 ```
 
-Use `nightshift doctor` after installing provider CLIs, changing config, or troubleshooting budget/provider detection.
+Use `nightshift doctor` after changing config or troubleshooting provider data and snapshot health. To smoke-test a specific provider CLI, run `nightshift task run lint-fix --provider PROVIDER --dry-run`.

@@ -82,10 +82,11 @@ Typical setup:
 
 ```bash
 gh auth login
+gh extension install github/gh-copilot
 gh copilot --help
 ```
 
-Nightshift prefers a standalone `copilot` binary when one exists. If it does not find one, it falls back to `gh copilot`. Copilot usage tracking is stored under `~/.copilot` by default.
+Nightshift prefers a standalone `copilot` binary when one exists. If it does not find one, it falls back to `gh copilot`, which Nightshift detects through `gh extension list`. Copilot usage tracking is stored under `~/.copilot` by default.
 
 ## First Run
 
@@ -103,11 +104,18 @@ nightshift init
 nightshift config validate
 ```
 
-## Verify Provider Detection
+## Verify Provider Access And Health
 
-After installing and authenticating provider CLIs, confirm Nightshift can see them:
+Use a dry run to confirm Nightshift can invoke the provider CLI you plan to use:
+
+```bash
+nightshift task run lint-fix --provider claude --dry-run
+nightshift task run lint-fix --provider codex --dry-run
+nightshift task run lint-fix --provider copilot --dry-run
+```
+
+Then run doctor to inspect config, data paths, usage, and snapshots for providers that are enabled in config:
 
 ```bash
 nightshift doctor
-nightshift preview
 ```
