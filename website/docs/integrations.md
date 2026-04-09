@@ -7,7 +7,19 @@ title: Integrations
 
 Nightshift integrates with your existing development workflow.
 
-## Claude Code
+## AI Providers
+
+Nightshift supports three execution providers. It uses the first enabled provider in `providers.preference`, which defaults to `claude -> codex -> copilot`.
+
+```yaml
+providers:
+  preference:
+    - claude
+    - codex
+    - copilot
+```
+
+### Claude Code
 
 Nightshift uses the Claude Code CLI to execute tasks. Authenticate via subscription or API key:
 
@@ -16,7 +28,13 @@ claude
 /login
 ```
 
-## Codex
+Relevant config keys:
+
+- `providers.claude.enabled`
+- `providers.claude.data_path`
+- `providers.claude.dangerously_skip_permissions`
+
+### Codex
 
 Nightshift supports OpenAI's Codex CLI as an alternative provider:
 
@@ -24,13 +42,37 @@ Nightshift supports OpenAI's Codex CLI as an alternative provider:
 codex --login
 ```
 
+Relevant config keys:
+
+- `providers.codex.enabled`
+- `providers.codex.data_path`
+- `providers.codex.dangerously_bypass_approvals_and_sandbox`
+
+### GitHub Copilot
+
+Nightshift supports GitHub Copilot through either the standalone `copilot` binary or `gh copilot`.
+
+```bash
+npm install -g @github/copilot
+# or
+curl -fsSL https://gh.io/copilot-install | bash
+```
+
+Copilot usage is tracked by request count instead of token usage. Nightshift stores that tracking data under `providers.copilot.data_path` (default: `~/.copilot`).
+
+Relevant config keys:
+
+- `providers.copilot.enabled`
+- `providers.copilot.data_path`
+- `providers.copilot.dangerously_skip_permissions`
+
 ## GitHub
 
 All output is PR-based. Nightshift creates branches and pull requests for its findings.
 
 ## td (Task Management)
 
-Nightshift can source tasks from [td](https://td.haplab.com) — task management for AI-assisted development. Tasks tagged with `nightshift` in td will be picked up automatically.
+Nightshift can source tasks from [td](https://td.haplab.com) - task management for AI-assisted development. Tasks tagged with `nightshift` in td will be picked up automatically.
 
 ```yaml
 integrations:

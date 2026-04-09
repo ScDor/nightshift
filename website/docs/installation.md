@@ -39,16 +39,46 @@ nightshift --version
 nightshift --help
 ```
 
-## Prerequisites
+## Provider Prerequisites
 
-- **Claude Code CLI** (`claude`) and/or **Codex CLI** (`codex`) installed
-- Authenticated via subscription login or API keys:
+Nightshift can use Claude Code, Codex, and GitHub Copilot. Install and authenticate the providers you want to use:
+
+### Claude Code
 
 ```bash
-# Claude Code
 claude
 /login
+```
 
-# Codex
+### Codex
+
+```bash
 codex --login
+```
+
+### GitHub Copilot
+
+Install either the standalone `copilot` binary or the GitHub CLI:
+
+```bash
+npm install -g @github/copilot
+# or
+curl -fsSL https://gh.io/copilot-install | bash
+```
+
+Nightshift prefers the standalone `copilot` binary when it is available and falls back to `gh copilot`. Sign in with your GitHub account before running tasks.
+
+## Next Step
+
+Use the guided setup for the fastest path:
+
+```bash
+nightshift setup
+```
+
+If you prefer to bootstrap manually, create a config first:
+
+```bash
+nightshift init
+nightshift init --global
 ```
