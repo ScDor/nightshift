@@ -12,6 +12,7 @@ title: Troubleshooting
 
 **"No config file found"**
 ```bash
+nightshift setup          # Guided bootstrap with provider and daemon checks
 nightshift init           # Create nightshift.yaml in the current directory
 nightshift init --global  # Create ~/.config/nightshift/config.yaml
 nightshift config validate
@@ -19,7 +20,8 @@ nightshift config validate
 
 **"No schedule configured"**
 - Set either `schedule.cron` or `schedule.interval` in config
-- Use `nightshift setup` if you want the guided bootstrap flow
+- Use `nightshift setup` or `nightshift init` if you want the bootstrap flow
+- Re-run `nightshift config validate` after editing the schedule
 
 **"Insufficient budget"**
 - Check current budget: `nightshift budget`
@@ -39,7 +41,7 @@ nightshift config validate
 
 **"Provider not available"**
 - Ensure Claude Code, Codex, or Copilot is installed and in `PATH`
-- For Copilot, install either `gh` or the standalone `copilot` binary
+- For Copilot, install either `gh` or the standalone `copilot` binary, then run `gh auth login` if you use `gh copilot`
 - Check API key or subscription login state for the provider you are using
 
 ## Debug Mode
@@ -65,4 +67,3 @@ nightshift <command> --help
 ```
 
 Report issues: https://github.com/marcus/nightshift/issues
-

@@ -5,21 +5,12 @@ title: Configuration
 
 # Configuration
 
-Nightshift uses YAML config files. Use `nightshift setup` for a guided bootstrap, `nightshift init` to create a config file, or edit the files directly.
+Nightshift uses YAML config files. Use `nightshift setup` for guided bootstrap, `nightshift init` or `nightshift init --global` to create a config file, and `nightshift config` to inspect or edit the merged view.
 
-## Config Sources
-
-Nightshift reads config in this order:
-
-1. Global config: `~/.config/nightshift/config.yaml`
-2. Project config: `nightshift.yaml` in the current project directory
-3. Environment overrides such as `NIGHTSHIFT_BUDGET_MAX_PERCENT`
-
-Project config values override global config values, and environment variables override both.
-
-## Config Workflow
+## Bootstrap Workflow
 
 ```bash
+nightshift setup
 nightshift init
 nightshift init --global
 nightshift config
@@ -29,13 +20,25 @@ nightshift config set --global logging.level debug
 nightshift config validate
 ```
 
+- `nightshift setup` walks through provider setup, projects, budget, schedule, PATH, and daemon installation.
 - `nightshift init` creates `nightshift.yaml` in the current directory.
 - `nightshift init --global` creates `~/.config/nightshift/config.yaml`.
-- `nightshift config` shows the merged config and the source paths.
+- `nightshift config` shows the merged config plus the source paths.
+- `nightshift config get` reads a nested value by key path.
 - `nightshift config set` writes to the project config when one exists, otherwise to the global config. Use `--global` to force the global file.
 - `nightshift config validate` checks the global file, project file, and merged config.
 
 `nightshift config set` accepts booleans, integers, floats, and strings. For example, `true`, `15`, `12.5`, and `debug` are all parsed correctly.
+
+## Config Sources
+
+Nightshift reads config in this order:
+
+1. Global config: `~/.config/nightshift/config.yaml`
+2. Project config: `nightshift.yaml` in the current project directory
+3. Environment overrides such as `NIGHTSHIFT_BUDGET_MAX_PERCENT`
+
+Project config values override global config values, and environment variables override both. `nightshift config` reflects that same merge order when it prints the current configuration.
 
 ## Config Locations
 
@@ -251,4 +254,3 @@ Each project can point at a path or a glob pattern. Use `exclude` to skip direct
 | PID file | `~/.local/share/nightshift/nightshift.pid` |
 
 If `state/state.json` exists from older versions, Nightshift migrates it to the SQLite database and renames the file to `state.json.migrated`.
-

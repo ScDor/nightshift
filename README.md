@@ -43,7 +43,7 @@ After installing, run the guided setup:
 nightshift setup
 ```
 
-This walks you through provider configuration, project selection, budget calibration, and daemon setup. It covers Claude, Codex, and Copilot. If you want a manual flow instead, use `nightshift init` for a project config or `nightshift init --global` for `~/.config/nightshift/config.yaml`.
+This walks you through provider configuration, project selection, budget calibration, and daemon setup. It covers Claude, Codex, and Copilot, and checks for the provider CLIs on `PATH`. If you want a manual flow instead, use `nightshift init` for a project config, `nightshift init --global` for `~/.config/nightshift/config.yaml`, and `nightshift config validate` to verify the result.
 
 Once complete you can preview what nightshift will do:
 
@@ -78,6 +78,8 @@ nightshift setup
 nightshift init
 nightshift init --global
 nightshift config
+nightshift config get budget.max_percent
+nightshift config set budget.max_percent 15
 nightshift config validate
 
 # Check environment and config health
@@ -107,9 +109,13 @@ nightshift task run lint-fix --provider codex --dry-run
 # Manage the scheduler and service lifecycle
 nightshift daemon start
 nightshift daemon start --foreground
+nightshift daemon start --timeout 45m
 nightshift daemon status
 nightshift daemon stop
 nightshift install
+nightshift install launchd
+nightshift install systemd
+nightshift install cron
 nightshift uninstall
 ```
 
@@ -179,7 +185,7 @@ Other useful flags:
 Nightshift supports three AI providers:
 - **Claude Code** - Anthropic's Claude via local CLI
 - **Codex** - OpenAI's Codex via local CLI
-- **GitHub Copilot** - GitHub's Copilot via `gh` or the standalone Copilot CLI
+- **GitHub Copilot** - GitHub's Copilot via the standalone `copilot` binary or `gh copilot`
 
 ### Claude Code
 
@@ -201,13 +207,17 @@ Supports signing in with ChatGPT or an API key.
 ### GitHub Copilot
 
 ```bash
-# Install Copilot CLI
+# Standalone binary
 npm install -g @github/copilot
 # or
 curl -fsSL https://gh.io/copilot-install | bash
+# GitHub CLI extension
+gh extension install github/gh-copilot
 ```
 
-Nightshift will use the standalone `copilot` binary when it exists, otherwise it falls back to `gh copilot`. `nightshift setup` checks for both. See [docs/COPILOT_INTEGRATION.md](docs/COPILOT_INTEGRATION.md) for details.
+Nightshift prefers the standalone `copilot` binary when it exists, otherwise it falls back to `gh copilot`. `nightshift setup` checks for both and uses whichever is on `PATH`.
+
+If you use `gh copilot`, authenticate with `gh auth login` first.
 
 If you prefer API-based usage, you can authenticate Claude and Codex CLIs with API keys instead.
 
@@ -222,9 +232,9 @@ Nightshift uses YAML config files to define:
 - Task priorities
 - Schedule preferences
 
-Use `nightshift setup` for guided onboarding. Use `nightshift init` to create a project config in the current directory, or `nightshift init --global` to create `~/.config/nightshift/config.yaml`. `nightshift config` shows the merged configuration, and `nightshift config validate` checks both the global and project files.
+Use `nightshift setup` for guided onboarding. Use `nightshift init` to create a project config in the current directory, or `nightshift init --global` to create `~/.config/nightshift/config.yaml`. `nightshift config` shows the merged configuration, `nightshift config get KEY` reads a value, `nightshift config set KEY VALUE` writes a value, and `nightshift config validate` checks both the global and project files.
 
-See the [full configuration docs](https://nightshift.haplab.com/docs/configuration) or [SPEC.md](docs/SPEC.md) for detailed options.
+See the [full configuration docs](https://nightshift.haplab.com/docs/configuration) for detailed options.
 
 Minimal example:
 

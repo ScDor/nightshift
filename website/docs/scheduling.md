@@ -28,7 +28,7 @@ schedule:
 - `window` restricts execution to a local time range.
 - `max_projects` and `max_tasks` provide defaults for scheduled and manual runs when CLI flags are omitted.
 
-If you want to bootstrap a schedule from scratch, run `nightshift init` or `nightshift setup`, then validate with `nightshift config validate`.
+If you want to bootstrap a schedule from scratch, run `nightshift setup` for the guided path, or `nightshift init` / `nightshift init --global` for a manual path. After editing the schedule, run `nightshift config validate`.
 
 ## Daemon Mode
 
@@ -42,7 +42,7 @@ nightshift daemon status
 nightshift daemon stop
 ```
 
-The daemon requires a configured schedule. It writes its PID file to `~/.local/share/nightshift/nightshift.pid` and uses the scheduler loop to launch runs on schedule.
+`nightshift daemon start` backgrounds the scheduler by default. `--foreground` keeps it in the current terminal, and `--timeout` defaults to 30m if you do not override it. The daemon requires a configured schedule. It writes its PID file to `~/.local/share/nightshift/nightshift.pid` and uses the scheduler loop to launch runs on schedule.
 
 ## Service Lifecycle
 
@@ -66,6 +66,7 @@ nightshift uninstall
 ```
 
 - `nightshift install` auto-detects the platform when you do not pass an init system.
+- `launchd` targets macOS, `systemd` targets Linux, and `cron` works everywhere.
 - `nightshift uninstall` removes the matching launchd, systemd, or cron entry if one is installed.
 
 ## Manual Runs
@@ -83,9 +84,9 @@ nightshift run --random-task            # Pick a random eligible task
 nightshift run --ignore-budget          # Bypass budget limits
 nightshift run --branch develop         # Base new branches on develop
 nightshift run --timeout 45m            # Increase per-agent timeout
+nightshift run --no-color               # Disable ANSI colors
 ```
 
 `nightshift run` shows a preflight summary before executing. In interactive terminals you get a confirmation prompt; `--yes` skips it. Non-TTY contexts such as cron, daemons, and CI skip confirmation automatically.
 
-`--random-task` is mutually exclusive with `--task`. When `--max-projects` or `--max-tasks` is omitted, Nightshift falls back to the values in the config file.
-
+`--random-task` is mutually exclusive with `--task`. When `--max-projects` or `--max-tasks` is omitted, Nightshift falls back to the values in `schedule.max_projects` and `schedule.max_tasks`. `--branch` defaults to the current branch, and `--timeout` defaults to 30m.

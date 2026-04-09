@@ -10,8 +10,8 @@ title: CLI Reference
 | Command | Description |
 |---------|-------------|
 | `nightshift setup` | Guided end-to-end onboarding |
-| `nightshift init` | Create a global or project config |
-| `nightshift config` | Show, edit, or validate config |
+| `nightshift init` | Create a global or project config file |
+| `nightshift config` | Show, edit, or validate config files |
 | `nightshift run` | Execute configured tasks now |
 | `nightshift preview` | Show upcoming runs |
 | `nightshift budget` | Check token budget status |
@@ -23,13 +23,13 @@ title: CLI Reference
 | `nightshift report` | Read run reports |
 | `nightshift snapshot` | Capture usage snapshots |
 | `nightshift busfactor` | Analyze ownership concentration |
-| `nightshift daemon` | Manage the background scheduler |
-| `nightshift install` | Install a system service |
-| `nightshift uninstall` | Remove an installed service |
+| `nightshift daemon` | Manage the background daemon lifecycle |
+| `nightshift install` | Install a launchd/systemd/cron service |
+| `nightshift uninstall` | Remove the installed service |
 
 ## Bootstrap and Config
 
-`nightshift setup` walks through provider setup, project selection, budget calibration, and daemon installation.
+`nightshift setup` walks through provider setup, project selection, budget calibration, PATH setup, and daemon installation.
 
 ```bash
 nightshift setup
@@ -43,7 +43,7 @@ nightshift init --global
 nightshift init --force
 ```
 
-`nightshift config` shows the merged configuration from global and project files, plus environment overrides.
+`nightshift config` shows the merged configuration from global and project files, plus environment overrides. `nightshift config set` writes to the project config when one exists, otherwise to the global config. Use `--global` to force the global file.
 
 ```bash
 nightshift config
@@ -59,6 +59,8 @@ nightshift config validate
 | `config get KEY` | Read a nested value by key path |
 | `config set KEY VALUE` | Update a value; use `--global` to force global config |
 | `config validate` | Validate global, project, and merged config |
+
+`nightshift config set` accepts booleans, integers, floats, and strings.
 
 ## Run Options
 
@@ -97,7 +99,7 @@ nightshift run --no-color                   # Disable ANSI colors
 
 ## Daemon and Services
 
-`nightshift daemon` manages the scheduler loop.
+`nightshift daemon` manages the scheduler loop. `daemon start` backgrounds the process by default, `--foreground` keeps it in the current terminal, and `--timeout` defaults to 30m.
 
 ```bash
 nightshift daemon start
@@ -111,6 +113,7 @@ nightshift daemon stop
 |------------|-------------|
 | `daemon start` | Start the scheduler in the background by default |
 | `daemon start --foreground` | Run the scheduler in the current terminal |
+| `daemon start --timeout 45m` | Set the per-agent execution timeout |
 | `daemon status` | Show whether the daemon is running |
 | `daemon stop` | Stop the running daemon |
 
@@ -123,6 +126,8 @@ nightshift install systemd
 nightshift install cron
 nightshift uninstall
 ```
+
+`launchd` targets macOS, `systemd` targets Linux, and `cron` works everywhere. `nightshift uninstall` removes the matching service entry if one is installed.
 
 ## Preview
 
@@ -169,7 +174,11 @@ nightshift task show lint-fix
 nightshift task show lint-fix --prompt-only
 nightshift task run lint-fix --provider claude
 nightshift task run lint-fix --provider copilot --dry-run
+nightshift task run lint-fix --provider codex --timeout 45m
+nightshift task run lint-fix --provider claude -p ~/code/myapp --branch develop
 ```
+
+`nightshift task run` requires `--provider`. It accepts `--project`, `--dry-run`, `--timeout` (default 30m), and `--branch` for new feature branches.
 
 ## Reports and Diagnostics
 
@@ -188,4 +197,3 @@ nightshift doctor
 | Flag | Scope | Description |
 |------|-------|-------------|
 | `--verbose` | Root command | Verbose output |
-
