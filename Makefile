@@ -4,10 +4,14 @@
 BINARY=nightshift
 PKG=./cmd/nightshift
 GO=go
-GOFMT=gofmt
 GOLANGCI_LINT=golangci-lint
 GOLANGCI_LINT_CONFIG=.golangci.yml
 GOLANGCI_LINT_VERSION=v1.64.8
+GO_ROOT_BIN=$(shell $(GO) env GOROOT)/bin
+GOFMT=$(GO_ROOT_BIN)/gofmt
+GO_BIN_OVERRIDE=$(shell $(GO) env GOBIN)
+GO_BIN_DIR=$(if $(GO_BIN_OVERRIDE),$(GO_BIN_OVERRIDE),$(shell $(GO) env GOPATH)/bin)
+GOLANGCI_LINT_BIN=$(GO_BIN_DIR)/$(GOLANGCI_LINT)
 
 # Build the binary
 build:
@@ -24,11 +28,11 @@ calibrate-providers:
 
 # Check formatting without rewriting files
 fmt:
-	@GO_FILES="$$(rg --files -g '*.go')"; \
+	@GO_FILES="$$(git ls-files -- '*.go')"; \
 	if [ -z "$$GO_FILES" ]; then \
 		echo "gofmt: no Go files"; \
 	else \
-		UNFORMATTED="$$( $(GOFMT) -l $$GO_FILES )"; \
+		UNFORMATTED="$$( $(GOFMT) -l $$GO_FILES )" || exit 1; \
 		if [ -z "$$UNFORMATTED" ]; then \
 			echo "gofmt: ok"; \
 		else \
@@ -68,8 +72,15 @@ coverage-html: coverage
 
 # Run golangci-lint with the checked-in config
 lint:
-	@command -v $(GOLANGCI_LINT) > /dev/null || (echo "golangci-lint not installed. Run: make lint-install" && exit 1)
-	$(GOLANGCI_LINT) run --config $(GOLANGCI_LINT_CONFIG) ./...
+	@if command -v $(GOLANGCI_LINT) > /dev/null; then \
+		LINT_BIN="$$(command -v $(GOLANGCI_LINT))"; \
+	elif [ -x "$(GOLANGCI_LINT_BIN)" ]; then \
+		LINT_BIN="$(GOLANGCI_LINT_BIN)"; \
+	else \
+		echo "golangci-lint not installed. Run: make lint-install"; \
+		exit 1; \
+	fi; \
+	PATH="$(GO_ROOT_BIN):$$PATH" "$$LINT_BIN" run --config $(GOLANGCI_LINT_CONFIG) ./...
 
 # Install the repo's pinned golangci-lint version
 lint-install:

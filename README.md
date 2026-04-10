@@ -278,6 +278,8 @@ make lint-install
 make check
 ```
 
+`make lint-install` installs the repo's pinned `golangci-lint` into your Go bin directory, and `make lint`/`make check` will use that copy even if the directory is not on your `PATH`.
+
 To bypass in a pinch: `git commit --no-verify`
 
 ## Uninstalling
