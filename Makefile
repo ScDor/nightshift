@@ -82,6 +82,7 @@ help:
 # Install git hooks with wrappers that resolve the active worktree at runtime.
 install-hooks:
 	@mkdir -p "$(HOOKS_DIR)"
+	@rm -f "$(HOOKS_DIR)/pre-commit" "$(HOOKS_DIR)/commit-msg"
 	@printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' '' 'repo_root="$$(git rev-parse --show-toplevel)"' 'exec "$$repo_root/scripts/pre-commit.sh" "$$@"' > "$(HOOKS_DIR)/pre-commit"
 	@chmod +x "$(HOOKS_DIR)/pre-commit"
 	@printf '%s\n' '#!/usr/bin/env bash' 'set -euo pipefail' '' 'repo_root="$$(git rev-parse --show-toplevel)"' 'exec "$$repo_root/scripts/commit-msg.sh" "$$@"' > "$(HOOKS_DIR)/commit-msg"
